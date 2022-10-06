@@ -1,8 +1,7 @@
-use clap::Parser;
-use std::io::prelude::*;
-use std::io::BufReader;
-use std::fs::File;
+mod lib;
 
+use clap::Parser;
+pub use crate::lib::read_file;
 
 #[derive(Parser)]
 struct Cli {
@@ -12,14 +11,6 @@ struct Cli {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Cli::parse();
-
-    let file = File::open(args.logs_path)?;
-    // Rust by default handles 3KB of capacity. We set 10KB.
-    // TODO: Handles this dinamically.
-    let mut content = BufReader::with_capacity(10, file);
-    let mut lines = String::new();
-    content.read_to_string(&mut lines)?
-    println!("{}", lines);
-
+    openwater::read_file(&args.logs_path, &mut std::io::stdout())?;
     Ok(())
 }
