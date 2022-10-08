@@ -23,11 +23,18 @@ pub fn handle_with_file(logs_path: Option<&PathBuf>, mut writer: impl std::io::W
 }
 
 pub fn handle_with_manual_inputs() {
-    let mut number = String::new();
-    println!("Enter any number");
-    io::stdin()
-        .read_line(&mut number)
-        .expect("Failed to read input");
-
-    println!("Entered number is {}", number);
+    let date = rprompt::read_reply().unwrap();
+    let time = rprompt::read_reply().unwrap();
+    let depth = rprompt::read_reply().unwrap();
+    let duration = rprompt::read_reply().unwrap();
+    let location = rprompt::read_reply().unwrap();
+    let divemaster = rprompt::read_reply().unwrap();
+    let dive_mode = rprompt::read_reply().unwrap();
+    let suite_type = rprompt::read_reply().unwrap();
+    let weight = rprompt::read_reply().unwrap();
+    let gas_type = rprompt::read_reply().unwrap();
+    let gas_consumed = rprompt::read_reply().unwrap();
+    let water_type = rprompt::read_reply().unwrap();
+    let water_temp = rprompt::read_reply().unwrap();
+    let current = rprompt::read_reply().unwrap();
 }

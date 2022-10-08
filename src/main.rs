@@ -6,8 +6,9 @@ pub use crate::lib::{handle_with_file, handle_with_manual_inputs};
 #[clap(author = "Diego Fernando Rojas", version, about)]
 struct Cli {
     // TODO: Implement short and long
-    vendor: String, // This has to be an Enum later.
+    vendor: Option<String>, // This has to be an Enum later.
     logs_path: Option<std::path::PathBuf>,
+    //action: String, // The action to be executed. Has to be an Enum later.
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
