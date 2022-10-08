@@ -1,6 +1,6 @@
 mod lib;
-use clap::Parser;
 pub use crate::lib::{handle_with_file, handle_with_manual_inputs};
+use clap::Parser;
 
 #[derive(Parser)]
 #[clap(author = "Diego Fernando Rojas", version, about)]

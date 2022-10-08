@@ -1,14 +1,17 @@
-use std::path::PathBuf;
 use std::fs::File;
-use std::io::BufReader;
-use std::io::prelude::*;
 use std::io;
+use std::io::prelude::*;
+use std::io::BufReader;
+use std::path::PathBuf;
 
 type ReturnedValue = Result<(), Box<dyn std::error::Error>>;
 
-pub fn handle_with_file(logs_path: Option<&PathBuf>, mut writer: impl std::io::Write) -> ReturnedValue {
+pub fn handle_with_file(
+    logs_path: Option<&PathBuf>,
+    mut writer: impl std::io::Write,
+) -> ReturnedValue {
     match logs_path {
-        Some(logs_path) => { 
+        Some(logs_path) => {
             let file = File::open(logs_path)?;
             // Rust by default handles 3KB of capacity. We set 10KB.
             // TODO: Handles this dinamically.
@@ -16,8 +19,10 @@ pub fn handle_with_file(logs_path: Option<&PathBuf>, mut writer: impl std::io::W
             let mut lines = String::new();
             content.read_to_string(&mut lines)?;
             writeln!(writer, "{}", lines)?;
-        },
-        None => { println!("Nothing"); }
+        }
+        None => {
+            println!("Nothing");
+        }
     }
     Ok(())
 }
