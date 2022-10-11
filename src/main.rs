@@ -1,24 +1,17 @@
-mod lib;
-pub use crate::lib::{handle_with_file, handle_with_manual_inputs};
+#[macro_use]
+//mod lib;
+//pub use crate::lib::{handle_with_file, handle_with_manual_inputs};
+mod args;
+
+use args::{OpenWaterArgs, ManualCommand};
 use clap::Parser;
+//use serde::{Serialize, Deserialize};
+use serde_json::{Result, Value};
 
-#[derive(Parser)]
-#[clap(author = "Diego Fernando Rojas", version, about)]
-struct Cli {
-    // TODO: Implement short and long
-    vendor: Option<String>, // This has to be an Enum later.
-    logs_path: Option<std::path::PathBuf>,
-    //action: String, // The action to be executed. Has to be an Enum later.
-}
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let get_args: Vec<_> = std::env::args().collect();
-    // If there is only one element, means that there was no arguments passed.
-    // The unique element is the name of the program.
-    if get_args.len() == 1 {
-        openwater::handle_with_manual_inputs();
-    }
-    let args = Cli::parse();
-    openwater::handle_with_file(args.logs_path.as_ref(), &mut std::io::stdout())?;
-    Ok(())
+
+fn main() { //-> Result<(), Box<dyn std::error::Error>> {
+    let args : OpenWaterArgs = OpenWaterArgs::parse();
+    let p: ManualCommand = serde_json::from_str(args);
+    println!("{:?}", p);
 }
