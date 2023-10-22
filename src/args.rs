@@ -1,32 +1,33 @@
-use clap:: {
-    Args,
-    Parser,
-    Subcommand
-};
+use clap::Parser;
+use std::fmt;
 
+#[derive(clap::ValueEnum, Clone, Debug, Eq, PartialEq)]
+pub enum VendorKind {
+    CressiLeonardo,
+    MaresGenius
+}
 
-#[derive(Parser, Debug)]
+impl fmt::Display for VendorKind {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            VendorKind::CressiLeonardo => write!(f, "cressi-leonardo"),
+            VendorKind::MaresGenius => write!(f, "mares-genius"),
+        }
+    }
+}
+
+#[derive(clap::ValueEnum, Clone, Debug)]
+enum OutputKind {
+    Json,
+    Plot
+}
+
+#[derive(Parser, Debug, Clone)]
 #[clap(author = "Diego Fernando Rojas", version, about)]
-pub struct OpenWaterArgs {
-    #[clap(subcommand)]
-    pub input_type: InputType,
+pub struct OpenWaterCli {
+    #[clap(value_enum)]
+    pub vendor: VendorKind,
+    //path: std::path::PathBuf,
+    #[clap(value_enum)]
+    output: OutputKind
 }
-
-#[derive(Debug, Subcommand)]
-pub enum InputType {
-    Manual(ManualCommand),
-}
-
-#[derive(Debug, Args)]
-pub struct ManualCommand {
-    /// Date of the dive.
-    #[arg(long = "date")]
-    pub date: String,
-    /// Time of the dive.
-    #[arg(long = "time")]
-    pub time: Option<String>,
-    /// Max depth of the dive.
-    #[arg(long = "depth")]
-    pub depth: String,
-}
-
