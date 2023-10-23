@@ -27,7 +27,9 @@ enum OutputKind {
 pub struct OpenWaterCli {
     #[clap(value_enum)]
     pub vendor: VendorKind,
-    //path: std::path::PathBuf,
+
     #[clap(value_enum)]
-    output: OutputKind
+    output: OutputKind,
+
+    pub path: std::path::PathBuf
 }

@@ -1,5 +1,7 @@
 #[derive(Hash, Eq, PartialEq, Debug)]
-pub struct CressiLeonardo;
+pub struct CressiLeonardo{
+    pub path: String,
+}
 
 #[derive(Hash, Eq, PartialEq, Debug)]
 pub struct MaresGenius;
@@ -14,6 +16,11 @@ impl BaseVendor for MaresGenius {
 }
 
 impl BaseVendor for CressiLeonardo {
+
     fn run(&self) {
+    
+        let path = self.path.clone();
+        println!("{}", path);
+
     }
 }
