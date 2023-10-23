@@ -1,3 +1,9 @@
+use std::collections::HashMap;
+
+use clap::Parser;
+use serde_json;
+use serde_json::Result;
+
 #[macro_use]
 mod args;
 mod vendors;
@@ -5,10 +11,6 @@ mod vendors;
 use args::{OpenWaterCli, VendorKind};
 use vendors:: {BaseVendor, MaresGenius, CressiLeonardo};
 
-use clap::Parser;
-use serde_json;
-use serde_json::Result;
-use std::collections::HashMap;
 
 fn main() -> Result<()> {
     let args : OpenWaterCli = OpenWaterCli::parse();
@@ -19,7 +21,7 @@ fn main() -> Result<()> {
     vendors_map.insert(VendorKind::CressiLeonardo.to_string(), Box::new(CressiLeonardo));
 
     let vendor: String = args.vendor.to_string();
-    vendors_map.get(&vendor);
+    vendors_map.get(&vendor).expect("This vendor still is not supported. Try with ther brand or model").run();
 
     Ok(())
 }
