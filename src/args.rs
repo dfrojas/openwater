@@ -1,35 +1,17 @@
 use clap::Parser;
-use std::fmt;
 
 #[derive(clap::ValueEnum, Clone, Debug, Eq, PartialEq)]
-pub enum VendorKind {
-    CressiLeonardo,
-    MaresGenius
-}
-
-impl fmt::Display for VendorKind {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            VendorKind::CressiLeonardo => write!(f, "cressi-leonardo"),
-            VendorKind::MaresGenius => write!(f, "mares-genius"),
-        }
-    }
-}
-
-#[derive(clap::ValueEnum, Clone, Debug)]
-enum OutputKind {
+pub enum OutputKind {
     Json,
     Plot
 }
 
-#[derive(Parser, Debug, Clone)]
+#[derive(Parser, Debug)]
 #[clap(author = "Diego Fernando Rojas", version, about)]
 pub struct OpenWaterCli {
-    #[clap(value_enum)]
-    pub vendor: VendorKind,
+    #[clap(short, long)]
+    pub input: std::path::PathBuf,
 
-    #[clap(value_enum)]
-    output: OutputKind,
-
-    pub path: std::path::PathBuf
+    #[clap(short, long, value_enum)]
+    pub output: OutputKind
 }

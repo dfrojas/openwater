@@ -9,6 +9,7 @@ rprompt = "1.0.5"
 colored = "2"
 serde = {version = "1.0.145", features = ["derive"]}
 serde_json = "1.0"
+csv = "1.3.0"
 
 [dev-dependencies]
 assert_cmd = "2.0"

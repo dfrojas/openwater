@@ -1,16 +1,13 @@
 use assert_cmd::Command;
-use assert_fs::prelude::*;
 
 #[test]
-fn read_cressi_leonardo() -> Result<(), Box<dyn std::error::Error>> {
-    let file = assert_fs::NamedTempFile::new("leonardoCressiSample.txt")?;
-    file.write_str("Max Depth: 300")?;
+fn json_outout_from_log_file() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut cmd = Command::cargo_bin("openwater")?;
-    cmd.arg("test").arg(file.path());
-    cmd.assert()
-        .success()
-        .stdout(predicates::str::contains("Max Depth: 300"));
+    cmd.arg("-i").arg("tests/fixtures/mocked_log.txt").arg("-o").arg("json");
+
+    cmd.assert().success().stdout(predicates::str::contains("[{\"dive_number\":\"1\",\"duration\":\"45:00\",\"buddy\":\"Tom\"}]\n"));
 
     Ok(())
+
 }

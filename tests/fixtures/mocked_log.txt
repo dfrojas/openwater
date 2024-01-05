@@ -1,0 +1,2 @@
+"dive_number"	"date"	"time"	"duration"	"sac (l/min)"	"max_depth"	"avg_depth"	"mode"	"air_temp"	"water_temp"	"location"	"gps"	"divemaster"	"buddy"	"suit"	"rating"	"visibility"	"notes"	"weight"	"tags"
+"1"	"2022-01-11"	"09:00:31"	"45:00"	""	"12.0"	"11.18"	""	""	"23.0"	"Calichan"	"11.312960 -74.194780"	"Tom"	"Tom"	"5 mm"	"5"	"5"	"First class of the Open Water course with Poseidon Dive Center"	"6.804"	"Training"
