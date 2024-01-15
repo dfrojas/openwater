@@ -9,13 +9,13 @@ mod actions;
 use args::{OpenWaterCli, OutputKind};
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let args : OpenWaterCli = OpenWaterCli::parse();
+    let args: OpenWaterCli = OpenWaterCli::parse();
 
     let input: String = args.input.as_path().display().to_string();
 
     match args.output {
         OutputKind::Json => actions::to_json(&input)?,
-        OutputKind::Plot => actions::to_plot(&input)?
+        OutputKind::Plot => actions::to_plot(&input)?,
     };
 
     Ok(())

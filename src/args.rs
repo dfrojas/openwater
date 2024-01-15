@@ -3,7 +3,7 @@ use clap::Parser;
 #[derive(clap::ValueEnum, Clone, Debug, Eq, PartialEq)]
 pub enum OutputKind {
     Json,
-    Plot
+    Plot,
 }
 
 #[derive(Parser, Debug)]
@@ -13,5 +13,5 @@ pub struct OpenWaterCli {
     pub input: std::path::PathBuf,
 
     #[clap(short, long, value_enum)]
-    pub output: OutputKind
+    pub output: OutputKind,
 }
