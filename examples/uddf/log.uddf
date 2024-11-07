@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<uddf version="3.2.0">
+    <generator>
+        <name>Manual Example</name>
+        <manufacturer>
+            <name>Example Corp</name>
+            <contact>info@example.com</contact>
+        </manufacturer>
+        <version>1.0</version>
+        <date>2024-03-07</date>
+    </generator>
+
+    <diver>
+        <owner>
+            <personal>
+                <firstname>Juan</firstname>
+                <lastname>Pérez</lastname>
+                <birthday>1990-05-15</birthday>
+            </personal>
+            <contact>
+                <email>juan@example.com</email>
+            </contact>
+            <equipment>
+                <divecomputer>
+                    <name>Suunto D5</name>
+                    <serialnumber>12345678</serialnumber>
+                </divecomputer>
+            </equipment>
+        </owner>
+    </diver>
+
+    <gasdefinitions>
+        <mix id="air">
+            <name>Air</name>
+            <o2>21.0</o2>
+            <n2>79.0</n2>
+            <he>0.0</he>
+        </mix>
+    </gasdefinitions>
+
+    <divesite>
+        <site>
+            <name>Blue Corner</name>
+            <geography>
+                <location>Palau</location>
+                <latitude>7.1356</latitude>
+                <longitude>134.2215</longitude>
+            </geography>
+        </site>
+    </divesite>
+
+    <profiledata>
+        <repetitiongroup>
+            <dive id="dive1">
+                <informationbeforedive>
+                    <link ref="air"/>
+                    <tankdata>
+                        <tankvolume>12.0</tankvolume>
+                        <tankpressurebegin>200.0</tankpressurebegin>
+                        <tankpressureend>50.0</tankpressureend>
+                    </tankdata>
+                    <weatherconditions>
+                        <airtemp>28.0</airtemp>
+                        <watertemp>26.0</watertemp>
+                        <visibility>20.0</visibility>
+                    </weatherconditions>
+                </informationbeforedive>
+
+                <datetime>2024-03-07T09:30:00</datetime>
+                <surfaceinterval>0</surfaceinterval>
+                <greatestdepth>30.4</greatestdepth>
+                <averagedepth>18.2</averagedepth>
+                <diveduration>45.0</diveduration>
+                <temperature>26.0</temperature>
+
+                <samples>
+                    <waypoint>
+                        <depth>0.0</depth>
+                        <divetime>0</divetime>
+                        <temperature>26.0</temperature>
+                        <tankpressure>200.0</tankpressure>
+                    </waypoint>
+                    <waypoint>
+                        <depth>10.5</depth>
+                        <divetime>2</divetime>
+                        <temperature>25.8</temperature>
+                        <tankpressure>190.0</tankpressure>
+                    </waypoint>
+                    <waypoint>
+                        <depth>20.3</depth>
+                        <divetime>5</divetime>
+                        <temperature>25.5</temperature>
+                        <tankpressure>180.0</tankpressure>
+                    </waypoint>
+                    <waypoint>
+                        <depth>30.4</depth>
+                        <divetime>8</divetime>
+                        <temperature>25.0</temperature>
+                        <tankpressure>165.0</tankpressure>
+                    </waypoint>
+                    <!-- Tiempo en el fondo -->
+                    <waypoint>
+                        <depth>28.5</depth>
+                        <divetime>20</divetime>
+                        <temperature>25.0</temperature>
+                        <tankpressure>120.0</tankpressure>
+                    </waypoint>
+                    <!-- Inicio del ascenso -->
+                    <waypoint>
+                        <depth>15.0</depth>
+                        <divetime>35</divetime>
+                        <temperature>25.5</temperature>
+                        <tankpressure>80.0</tankpressure>
+                    </waypoint>
+                    <waypoint>
+                        <depth>5.0</depth>
+                        <divetime>40</divetime>
+                        <temperature>26.0</temperature>
+                        <tankpressure>65.0</tankpressure>
+                    </waypoint>
+                    <waypoint>
+                        <depth>0.0</depth>
+                        <divetime>45</divetime>
+                        <temperature>26.0</temperature>
+                        <tankpressure>50.0</tankpressure>
+                    </waypoint>
+                </samples>
+
+                <informationafterdive>
+                    <notes>
+                        Beautiful drift dive at Blue Corner. Saw grey reef sharks, 
+                        schools of barracuda, and napoleon wrasse. Current was moderate, 
+                        visibility excellent. Used reef hook during shark observation.
+                    </notes>
+                    <rating>5</rating>
+                    <visibility>20.0</visibility>
+                    <current>2</current>
+                </informationafterdive>
+            </dive>
+        </repetitiongroup>
+    </profiledata>
+</uddf>
