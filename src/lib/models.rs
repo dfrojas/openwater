@@ -1,53 +1,53 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct Generator {
     name: String,
     version: String,
     date: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct Diver {
     owner: Owner,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct Owner {
     personal: Personal,
     contact: Contact,
     equipment: Equipment,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct Personal {
     firstname: String,
     lastname: String,
     birthday: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct Contact {
     email: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct Equipment {
     divecomputer: DiveComputer,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct DiveComputer {
     name: String,
     serialnumber: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct GasDefinition {
     mix: Mix,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct Mix {
     name: String,
     o2: f32,
@@ -55,20 +55,20 @@ struct Mix {
     he: f32,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct Geography {
     location: String,
     latitude: f32,
     longitude: f32,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct Site {
     name: String,
     geography: Geography,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct DiveSite {
     site: Site,
 }
@@ -79,32 +79,32 @@ struct DiveSite {
 //     reference: String,
 // }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct TankData {
     tankvolume: f32,
     tankpressurebegin: f32,
     tankpressureend: f32,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct InformationBeforeDive {
     tankdata: TankData,
     weatherconditions: WeatherConditions,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct WeatherConditions {
     airtemp: f32,
     watertemp: f32,
     visibility: f32,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct Samples {
     waypoint: Vec<Waypoint>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct Waypoint {
     depth: f32,
     divetime: f32,
@@ -112,7 +112,7 @@ struct Waypoint {
     tankpressure: f32,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct InformationAfterDive {
     notes: String,
     rating: u8,
@@ -120,7 +120,7 @@ struct InformationAfterDive {
     current: f32,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct Dive {
     informationbeforedive: InformationBeforeDive,
     datetime: String,
@@ -133,17 +133,17 @@ struct Dive {
     informationafterdive: InformationAfterDive,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct RepetitionGroup {
     dive: Dive,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct ProfileData {
     repetitiongroup: RepetitionGroup,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct UDDF {
     generator: Generator,
     diver: Diver,

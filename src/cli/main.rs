@@ -14,8 +14,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let input: String = args.input.as_path().display().to_string();
 
     match args.output {
-        OutputKind::Json => actions::to_json(&input)?,
-        OutputKind::Plot => actions::to_plot(&input)?,
+        OutputKind::Json => {
+            let json = actions::to_json(&input)?;
+            println!("{:?}", json);
+        } // OutputKind::Plot => actions::to_plot(&input)?,
     };
 
     Ok(())
