@@ -1,3 +1,8 @@
+.PHONY: compile-lib
+compile-lib: ## Compile the library
+	@echo "Compiling library..."
+	cargo build --lib
+
 .PHONY: run-lib
 run-lib: ## Compile and run the library with its examples
 	@echo "Running library with examples..."
@@ -8,3 +13,5 @@ run-lib: ## Compile and run the library with its examples
 format: ## Format the code
 	@echo "Formatting code..."
 	rustfmt src/lib/*.rs
+	rustfmt src/cli/*.rs
+	rustfmt examples/*.rs
