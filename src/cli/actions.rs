@@ -1,6 +1,6 @@
-// use plotly::common::Title;
-// use plotly::layout::{Axis, Layout};
-// use plotly::{Bar, Plot};
+use plotly::common::Title;
+use plotly::layout::{Axis, Layout};
+use plotly::{Bar, Plot};
 use std::error::Error;
 
 use serde_json::Value;
@@ -13,35 +13,36 @@ pub fn to_json(path: &str) -> Result<Value, Box<dyn Error>> {
     Ok(json)
 }
 
-// // Draw a simple plot of the average depth by location.
-// pub fn to_plot(path: &str) -> Result<(), Box<dyn Error>> {
-//     let mut rdr = ReaderBuilder::new()
-//         .quoting(false)
-//         .delimiter(b'"')
-//         .from_path(path)?;
+// TODO: Max depth by location
+pub fn to_plot(path: &str) -> Result<Value, Box<dyn Error>> {
+    let uddf_parsed = openwater::uddf_parse_file(path)?;
 
-//     let mut x_axis = Vec::new();
-//     let mut y_axis = Vec::new();
+    let mut x_axis: Vec<f32> = Vec::new();
+    let mut y_axis: Vec<f32> = Vec::new();
 
-//     for x in rdr.deserialize() {
-//         let x_data: CsvBuilder = x?;
+    for waypoint in uddf_parsed
+        .profiledata
+        .repetitiongroup
+        .dive
+        .samples
+        .waypoint
+    {
+        x_axis.push(waypoint.depth);
+        y_axis.push(waypoint.tankpressure);
+    }
 
-//         x_axis.push(x_data.location.unwrap());
-//         y_axis.push(x_data.avg_depth.unwrap());
-//     }
+    let trace = Bar::new(x_axis, y_axis).name("Depth");
 
-//     let trace = Bar::new(x_axis, y_axis).name("Depth by location");
+    let layout = Layout::new()
+        .title(Title::new("Tank Pressure by depth"))
+        .x_axis(Axis::new().title(Title::new("Meters")))
+        .y_axis(Axis::new().title(Title::new("Tank Pressure")));
 
-//     let layout = Layout::new()
-//         .title(Title::new("Depth by location"))
-//         .x_axis(Axis::new().title(Title::new("Location")))
-//         .y_axis(Axis::new().title(Title::new("Meters")));
+    let mut plot = Plot::new();
 
-//     let mut plot = Plot::new();
+    plot.add_trace(trace);
+    plot.set_layout(layout);
+    plot.show();
 
-//     plot.add_trace(trace);
-//     plot.set_layout(layout);
-//     plot.show();
-
-//     Ok(())
-// }
+    Ok(Value::Null)
+}

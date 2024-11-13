@@ -3,7 +3,7 @@ use clap::Parser;
 #[derive(clap::ValueEnum, Clone, Debug, Eq, PartialEq)]
 pub enum OutputKind {
     Json,
-    //Plot,
+    Plot,
 }
 
 #[derive(Parser, Debug)]
