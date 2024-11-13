@@ -32,6 +32,9 @@ Currently, Open Water only is a CLI that processes the dive logs to converts the
 
 ## How to use
 
+### Library
+`make run-lib`
+
 ### CLI
 
 ###### JSON:

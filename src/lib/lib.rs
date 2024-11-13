@@ -1,6 +1,6 @@
 pub use errors::UDDFError;
 pub use models::UDDF;
-pub use parser::parse_uddf_file;
+pub use parser::uddf_parse_file;
 
 mod errors;
 mod models;

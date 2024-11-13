@@ -10,7 +10,7 @@ impl UDDF {
     }
 }
 
-pub fn parse_uddf_file(path: &str) -> Result<UDDF, UDDFError> {
+pub fn uddf_parse_file(path: &str) -> Result<UDDF, UDDFError> {
     let uddf = UDDF::from_file(path)?;
     Ok(uddf)
 }
