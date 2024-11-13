@@ -39,13 +39,13 @@ Currently, Open Water only is a CLI that processes the dive logs to converts the
 
 ###### JSON:
 
-`cargo run --bin cli -- -o json -i /path_to_dive_log.csv`
+`cargo run --bin cli -- -o json -i /path_to_dive_log.uddf`
 
 It prints the JSON in the stdout.
 
 ###### PLOT:
 
-`cargo run --bin cli -- -o plot -i /path_to_dive_log.csv`
+`cargo run --bin cli -- -o plot -i /path_to_dive_log.uddf`
 
 It draws a bar chat in your browser. e.g:
 
