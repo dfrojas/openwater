@@ -9,6 +9,20 @@ run-lib: ## Compile and run the library with its examples
 	cargo build --lib
 	cargo run --example dev
 
+.PHONY: run-mac
+run-mac: ## Compile and run the GUI
+	@echo "Running GUI..."
+	cd src && \
+	cargo build --lib --release && \
+	cd .. && \
+	cp target/release/libopenwater.dylib /usr/local/lib/ && \
+	cd src/gui && \
+	cp Sources/OpenWaterCore/openwater.h /usr/local/include/ && \
+	cp openwater.pc /usr/local/lib/pkgconfig/ && \
+	swift build && \
+	swift run
+
+
 .PHONY: format
 format: ## Format the code
 	@echo "Formatting code..."

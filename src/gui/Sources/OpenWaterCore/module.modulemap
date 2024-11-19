@@ -1,0 +1,5 @@
+module OpenWaterCore {
+    umbrella header "openwater.h"
+    link "openwater"
+    export *
+}

@@ -1,0 +1,10 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: openwater
+Description: OpenWater library
+Version: 0.1.0
+Libs: -L${libdir} -lopenwater
+Cflags: -I${includedir}
