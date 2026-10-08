@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uddf xmlns="http://www.streit.cc/uddf/3.2/" version="3.2.1">
+    <generator>
+        <name>Minimum Example</name>
+    </generator>
+    <gasdefinitions>
+        <mix id="air">
+            <name>Air</name>
+            <o2>0.21</o2>
+            <n2>0.79</n2>
+        </mix>
+    </gasdefinitions>
+    <!-- Synthetic dive profile. Depths in metres, elapsed times in seconds. -->
+    <profiledata>
+        <repetitiongroup id="group-1">
+            <dive id="dive-1">
+                <informationbeforedive>
+                    <datetime>2026-10-08T10:00:00Z</datetime>
+                </informationbeforedive>
+                <samples>
+                    <waypoint>
+                        <depth>0</depth>
+                        <divetime>0</divetime>
+                        <switchmix ref="air"/>
+                    </waypoint>
+                    <waypoint>
+                        <depth>10</depth>
+                        <divetime>120</divetime>
+                    </waypoint>
+                    <waypoint>
+                        <depth>10</depth>
+                        <divetime>600</divetime>
+                    </waypoint>
+                    <waypoint>
+                        <depth>0</depth>
+                        <divetime>720</divetime>
+                    </waypoint>
+                </samples>
+                <informationafterdive>
+                    <greatestdepth>10</greatestdepth>
+                    <diveduration>720</diveduration>
+                </informationafterdive>
+            </dive>
+        </repetitiongroup>
+    </profiledata>
+</uddf>
