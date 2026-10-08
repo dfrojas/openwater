@@ -1,0 +1,14 @@
+.{
+    .name = .openwater,
+    .fingerprint = 0x1fe225e490be5ddf,
+    .version = "0.0.0",
+    .minimum_zig_version = "0.17.0",
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "README.md",
+        "LICENSE",
+    },
+}
