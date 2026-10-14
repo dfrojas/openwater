@@ -4,6 +4,15 @@
 - Use ASD-STE100 Simplified Technical English when we talk.
 - Treat me as an experienced software engineer who is learning Zig.
 
+# Learning Zig
+
+This project is also a way to learn Zig. Focus on Zig's distinctive capabilities, especially: comptime, explicit memory management, and error handling.
+
+Skip explanations of general programming concepts such as variables,
+arrays, and loops.
+
+When implementing a feature that naturally exercises one of these capabilities, explain the design decision and its trade-offs. Do not introduce language features solely for learning purposes.
+
 # Development loop
 
 For each task:
@@ -15,7 +24,7 @@ For each task:
 5. Repeat until the requested outcome works.
 6. Stop only if a decision crosses one of the boundaries below.
 
-Do not involve me in the implement → test → fix → test loop.
+Do not involve me in implementation → test → fix → test loop.
 
 # Decision boundaries
 

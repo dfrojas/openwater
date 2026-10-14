@@ -96,9 +96,8 @@ const Document = struct {
     mixes: ?[]const Mix = null,
     groups: ?[]const RepetitionGroup = null,
 
-    /// Checks this subset's cardinalities, references, and physical values.
-    /// Not an XML/XSD validator. Dates and XML identifier syntax are deferred.
-    fn validate(self: Document, allocator: Allocator) !void {
+    /// Checks identity and reference targets only; independent of ownership.
+    fn checkReferences(self: Document, allocator: Allocator) !void {
         var ids = Ids.init(allocator);
         defer ids.deinit();
         // Collect first: IDREFs can point forward and IDs share one namespace.
@@ -106,64 +105,22 @@ const Document = struct {
             try addPerson(&ids, diver.owner, .owner);
             for (diver.buddies) |buddy| try addPerson(&ids, buddy, .buddy);
         }
-        if (self.sites) |sites| for (sites) |site| {
-            try addId(&ids, site.id, .site);
-            if (site.geography) |geo| {
-                try bounded(geo.latitude_deg, -90, 90);
-                try bounded(geo.longitude_deg, -180, 180);
-                if (geo.altitude_m) |altitude| if (!std.math.isFinite(altitude)) return error.InvalidValue;
-            }
-        };
-        if (self.mixes) |mixes| {
-            if (mixes.len == 0) return error.EmptyCollection;
-            for (mixes) |mix| {
-                try addId(&ids, mix.id, .mix);
-                var sum: f32 = 0;
-                var complete = true;
-                for ([_]?f32{ mix.o2, mix.n2, mix.he, mix.ar, mix.h2 }) |fraction| {
-                    try bounded(fraction, 0, 1);
-                    if (fraction) |value| sum += value else complete = false;
-                }
-                if (sum > 1.00001 or (complete and @abs(sum - 1) > 0.00001)) return error.InvalidComposition;
-                if (mix.limit) |limit| switch (limit) {
-                    inline else => |value| try nonnegative(value),
-                };
-            }
-        }
+        if (self.sites) |sites| for (sites) |site| try addId(&ids, site.id, .site);
+        if (self.mixes) |mixes| for (mixes) |mix| try addId(&ids, mix.id, .mix);
         if (self.groups) |groups| {
-            if (groups.len == 0) return error.EmptyCollection;
             for (groups) |group| {
                 try addId(&ids, group.id, .group);
-                if (group.dives.len == 0) return error.EmptyCollection;
                 for (group.dives) |dive| try addId(&ids, dive.id, .dive);
             }
             for (groups) |group| for (group.dives) |dive| {
                 for (dive.before.links) |ref| try checkRef(&ids, ref, &.{ .buddy, .site });
-                if (dive.before.dive_number == 0) return error.InvalidValue;
-                if (dive.before.surface_interval) |interval| switch (interval) {
-                    .infinity => {},
-                    .seconds => |seconds| if (seconds < 0) return error.InvalidValue,
-                };
-                try nonnegative(dive.before.surface_pressure_pa);
-                try nonnegative(dive.after.greatest_depth_m);
-                try nonnegative(dive.after.duration_s);
-                try nonnegative(dive.after.lowest_temperature_k);
                 for (dive.tanks) |tank| {
                     for (tank.links) |ref| try checkRef(&ids, ref, &.{ .tank, .mix });
-                    try nonnegative(tank.volume_m3);
-                    try nonnegative(tank.pressure_begin_pa);
-                    try nonnegative(tank.pressure_end_pa);
                 }
                 if (dive.samples) |samples| {
-                    if (samples.len == 0) return error.EmptyCollection;
                     for (samples) |sample| {
-                        try nonnegative(sample.depth_m);
-                        try nonnegative(sample.time_s);
-                        try nonnegative(sample.temperature_k);
-                        try nonnegative(sample.heart_rate_per_s);
                         if (sample.switch_mix_ref) |ref| try checkRef(&ids, ref, &.{.mix});
                         for (sample.pressures) |pressure| {
-                            try nonnegative(pressure.pressure_pa);
                             if (pressure.tank_ref) |ref| try checkRef(&ids, ref, &.{.tank});
                         }
                     }
@@ -190,10 +147,7 @@ fn addId(ids: *Ids, id: []const u8, kind: Kind) !void {
 
 fn addPerson(ids: *Ids, person: Person, kind: Kind) !void {
     try addId(ids, person.id, kind);
-    for (person.tanks) |tank| {
-        try addId(ids, tank.id, .tank);
-        try nonnegative(tank.volume_m3);
-    }
+    for (person.tanks) |tank| try addId(ids, tank.id, .tank);
 }
 
 fn checkRef(ids: *const Ids, ref: []const u8, allowed: []const Kind) !void {
@@ -202,36 +156,11 @@ fn checkRef(ids: *const Ids, ref: []const u8, allowed: []const Kind) !void {
     return error.WrongReferenceKind;
 }
 
-fn nonnegative(value: ?f32) !void {
-    if (value) |v| if (!std.math.isFinite(v) or v < 0) return error.InvalidValue;
-}
-
-fn bounded(value: ?f32, min: f32, max: f32) !void {
-    if (value) |v| if (!std.math.isFinite(v) or v < min or v > max) return error.InvalidValue;
-}
-
-/// Separate, opt-in complete recorded-profile policy; preserves sparse XSD data.
-fn validateRecordedProfile(samples: []const Waypoint) !void {
-    if (samples.len < 3) return error.IncompleteProfile;
-    var previous_time: f32 = -1;
-    for (samples) |sample| {
-        const time = sample.time_s orelse return error.IncompleteProfile;
-        const depth = sample.depth_m orelse return error.IncompleteProfile;
-        try nonnegative(time);
-        try nonnegative(depth);
-        // Strict increase is a spike policy, stronger than XSD's constraints.
-        if (time <= previous_time) return error.NonIncreasingTime;
-        previous_time = time;
-    }
-    if (samples[0].time_s.? != 0 or samples[0].depth_m.? != 0 or samples[samples.len - 1].depth_m.? != 0)
-        return error.MissingSurfaceEndpoint;
-}
-
 const OwnedDocument = struct {
     arena: std.heap.ArenaAllocator,
     value: Document,
 
-    /// Deep copy before validation. The source can be released after success.
+    /// Deep copy only. The source can be released after success.
     fn init(allocator: Allocator, source: Document) !OwnedDocument {
         var arena = std.heap.ArenaAllocator.init(allocator);
         errdefer arena.deinit();
@@ -288,8 +217,6 @@ const OwnedDocument = struct {
             }
             value.groups = copies;
         }
-        // Temporary lookup storage is freed separately, not retained in the arena.
-        try value.validate(allocator);
         // Never store `a`: it points at the local arena, which moves on return.
         return .{ .arena = arena, .value = value };
     }
@@ -375,13 +302,13 @@ fn exerciseOwned(allocator: Allocator) !void {
     var owned = try OwnedDocument.init(allocator, example);
     defer owned.deinit();
     const doc = owned.value;
+    try doc.checkReferences(allocator);
     const dives = doc.groups.?[0].dives;
     try testing.expectEqual(@as(usize, 2), dives.len);
     try testing.expectEqual(@as(i64, 2700), dives[1].before.surface_interval.?.seconds);
     try testing.expect(dives[1].samples == null);
     try testing.expectEqualStrings("reef", dives[0].before.links[0]);
     const samples = dives[0].samples.?;
-    try validateRecordedProfile(samples);
     try testing.expectEqual(@as(usize, 2), samples[0].pressures.len);
     var active: ?*const Mix = null;
     for (samples) |sample| if (sample.switch_mix_ref) |ref| {
@@ -418,28 +345,29 @@ test "source storage can be freed before the owned document" {
     try testing.expectEqualStrings("Back gas", owned.value.diver.?.owner.tanks[0].name);
     try testing.expectEqualStrings("Example bay", owned.value.sites.?[0].geography.?.location);
     try testing.expectEqualStrings("EAN50", owned.value.findMix("ean50").?.name);
-    try owned.value.validate(testing.allocator);
+    try owned.value.checkReferences(testing.allocator);
 }
 
 test "every backing allocation failure is propagated and cleaned up" {
     try testing.checkAllAllocationFailures(testing.allocator, exerciseOwned, .{});
 }
 
-fn invalidOwned(allocator: Allocator) !void {
+fn exerciseDuplicateIds(allocator: Allocator) !void {
     var source = example;
     var sites = [_]Site{example.sites.?[0]};
     sites[0].id = "air"; // Collision across entity kinds, detected after copying.
     source.sites = &sites;
-    var owned = OwnedDocument.init(allocator, source) catch |err| switch (err) {
+    var owned = try OwnedDocument.init(allocator, source);
+    defer owned.deinit();
+    owned.value.checkReferences(allocator) catch |err| switch (err) {
         error.DuplicateId => return,
         else => return err,
     };
-    owned.deinit();
     return error.ExpectedDuplicateId;
 }
 
-test "validation failure after construction also releases the arena" {
-    try testing.checkAllAllocationFailures(testing.allocator, invalidOwned, .{});
+test "construction permits duplicate IDs; separate identity check and cleanup" {
+    try testing.checkAllAllocationFailures(testing.allocator, exerciseDuplicateIds, .{});
 }
 
 test "references reject absent targets and incorrect target kinds" {
@@ -448,90 +376,47 @@ test "references reject absent targets and incorrect target kinds" {
     var group = RepetitionGroup{ .id = "group", .dives = (&dive)[0..1] };
     doc.groups = (&group)[0..1];
     dive.before.links = &.{"absent"};
-    try testing.expectError(error.UnresolvedReference, doc.validate(testing.allocator));
+    try testing.expectError(error.UnresolvedReference, doc.checkReferences(testing.allocator));
     dive.before.links = &.{"air"};
-    try testing.expectError(error.WrongReferenceKind, doc.validate(testing.allocator));
+    try testing.expectError(error.WrongReferenceKind, doc.checkReferences(testing.allocator));
     dive.before.links = &.{"buddy"};
     var sample = Waypoint{ .switch_mix_ref = "reef" };
     dive.samples = (&sample)[0..1];
-    try testing.expectError(error.WrongReferenceKind, doc.validate(testing.allocator));
+    try testing.expectError(error.WrongReferenceKind, doc.checkReferences(testing.allocator));
     sample.switch_mix_ref = "air";
     sample.pressures = &.{.{ .tank_ref = "air", .pressure_pa = 10000000 }};
-    try testing.expectError(error.WrongReferenceKind, doc.validate(testing.allocator));
+    try testing.expectError(error.WrongReferenceKind, doc.checkReferences(testing.allocator));
     sample.pressures = &.{.{ .pressure_pa = 10000000 }}; // No tank association invented.
-    try doc.validate(testing.allocator);
+    try doc.checkReferences(testing.allocator);
     dive.tanks = &.{.{ .links = &.{"reef"}, .pressure_begin_pa = 10000000 }};
-    try testing.expectError(error.WrongReferenceKind, doc.validate(testing.allocator));
+    try testing.expectError(error.WrongReferenceKind, doc.checkReferences(testing.allocator));
+    group.id = "";
+    try testing.expectError(error.EmptyId, doc.checkReferences(testing.allocator));
 }
 
-test "absence, empty collections, and sparse samples remain distinct" {
-    var doc = Document{ .generator = .{ .name = "minimal" } };
-    try doc.validate(testing.allocator);
-    doc.sites = &.{}; // XSD permits an empty divesite section.
-    try doc.validate(testing.allocator);
-    doc.mixes = &.{};
-    try testing.expectError(error.EmptyCollection, doc.validate(testing.allocator));
-    doc.mixes = &.{.{ .id = "unknown", .name = "Unknown composition" }};
-    try doc.validate(testing.allocator); // Missing oxygen is allowed by the XSD.
-    doc.groups = &.{};
-    try testing.expectError(error.EmptyCollection, doc.validate(testing.allocator));
-    var group = RepetitionGroup{ .id = "group", .dives = &.{} };
-    doc.groups = (&group)[0..1];
-    try testing.expectError(error.EmptyCollection, doc.validate(testing.allocator));
-    var dive = example.groups.?[0].dives[1];
-    dive.before.links = &.{};
-    group.dives = (&dive)[0..1];
-    dive.samples = &.{};
-    try testing.expectError(error.EmptyCollection, doc.validate(testing.allocator));
-    dive.samples = &.{.{}};
-    try doc.validate(testing.allocator);
-    try testing.expectError(error.IncompleteProfile, validateRecordedProfile(dive.samples.?));
-}
-
-test "physical checks do not infer missing gas fractions" {
+test "owned copies preserve absent, empty, and sparse samples" {
     var doc = example;
-    var mixes = [_]Mix{ example.mixes.?[0], example.mixes.?[1] };
-    doc.mixes = &mixes;
-    mixes[0].o2 = 0.8;
-    try testing.expectError(error.InvalidComposition, doc.validate(testing.allocator));
-    mixes[0].o2 = std.math.nan(f32);
-    try testing.expectError(error.InvalidValue, doc.validate(testing.allocator));
-    mixes[0].o2 = -0.1;
-    try testing.expectError(error.InvalidValue, doc.validate(testing.allocator));
-    mixes[0].o2 = 0.1; // All five fractions given, but do not sum to one.
-    try testing.expectError(error.InvalidComposition, doc.validate(testing.allocator));
-    mixes[0].n2 = null; // Partial composition is preserved, not completed.
-    try doc.validate(testing.allocator);
-    var sites = [_]Site{example.sites.?[0]};
-    doc.sites = &sites;
-    sites[0].geography.?.latitude_deg = 91;
-    try testing.expectError(error.InvalidValue, doc.validate(testing.allocator));
-    sites[0].geography.?.latitude_deg = 28;
-    var dive = example.groups.?[0].dives[1];
-    var group = RepetitionGroup{ .id = "group", .dives = (&dive)[0..1] };
-    doc.groups = (&group)[0..1];
-    dive.before.surface_interval = .{ .seconds = -1 };
-    try testing.expectError(error.InvalidValue, doc.validate(testing.allocator));
-    dive.before.surface_interval = null;
-    dive.after.duration_s = std.math.inf(f32);
-    try testing.expectError(error.InvalidValue, doc.validate(testing.allocator));
-    dive.after.duration_s = 720;
-    dive.before.dive_number = 0;
-    try testing.expectError(error.InvalidValue, doc.validate(testing.allocator));
-}
-
-test "complete profile policy checks time, endpoints, and missing values" {
-    var samples = [_]Waypoint{
-        .{ .depth_m = 0, .time_s = 0 },
-        .{ .depth_m = 10, .time_s = 120 },
-        .{ .depth_m = 0, .time_s = 720 },
+    var dives = [_]Dive{
+        example.groups.?[0].dives[1],
+        example.groups.?[0].dives[1],
+        example.groups.?[0].dives[1],
     };
-    try validateRecordedProfile(&samples);
-    samples[1].time_s = 0;
-    try testing.expectError(error.NonIncreasingTime, validateRecordedProfile(&samples));
-    samples[1].time_s = 120;
-    samples[2].depth_m = 1;
-    try testing.expectError(error.MissingSurfaceEndpoint, validateRecordedProfile(&samples));
-    samples[2].depth_m = null;
-    try testing.expectError(error.IncompleteProfile, validateRecordedProfile(&samples));
+    dives[1].id = "empty";
+    dives[1].samples = &.{};
+    dives[2].id = "sparse";
+    dives[2].samples = &.{.{}};
+    const group = RepetitionGroup{ .id = "group", .dives = &dives };
+    doc.groups = (&group)[0..1];
+    doc.sites = &.{};
+    doc.mixes = null;
+    var owned = try OwnedDocument.init(testing.allocator, doc);
+    defer owned.deinit();
+    const copies = owned.value.groups.?[0].dives;
+    try testing.expect(owned.value.mixes == null);
+    try testing.expectEqual(@as(usize, 0), owned.value.sites.?.len);
+    try testing.expect(copies[0].samples == null);
+    try testing.expectEqual(@as(usize, 0), copies[1].samples.?.len);
+    try testing.expectEqual(@as(usize, 1), copies[2].samples.?.len);
+    try testing.expect(copies[2].samples.?[0].depth_m == null);
+    try testing.expect(copies[2].samples.?[0].time_s == null);
 }
