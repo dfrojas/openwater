@@ -46,10 +46,6 @@ When you stop:
 
 Do not stop for ordinary local implementation details.
 
-# Dependencies and tooling
-
-Do not introduce a third-party dependency, third-party GitHub Action, or new development/build tooling without surfacing the decision first.
-
 Use [`mitchellh/libflightplan`](https://github.com/mitchellh/libflightplan/) as the primary reference for project structure and tooling when relevant. Inspect its approach before making a material decision, but do not copy it blindly.
 
 # Scope
