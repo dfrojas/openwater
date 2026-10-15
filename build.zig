@@ -4,11 +4,24 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
+    const xmlread = b.dependency("xmlread", .{
+        .target = target,
+        .optimize = optimize,
+    });
+
+    const fixtures = b.addModule("fixtures", .{
+        .root_source_file = b.path("fixtures/root.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+
     const openwater = b.addModule("openwater", .{
         .root_source_file = b.path("src/root.zig"),
         .target = target,
         .optimize = optimize,
     });
+    openwater.addImport("xmlread", xmlread.module("xml"));
+    openwater.addImport("fixtures", fixtures);
 
     const exe = b.addExecutable(.{
         .name = "openwater",
@@ -16,7 +29,10 @@ pub fn build(b: *std.Build) void {
             .root_source_file = b.path("src/main.zig"),
             .target = target,
             .optimize = optimize,
-            .imports = &.{.{ .name = "openwater", .module = openwater }},
+            .imports = &.{
+                .{ .name = "openwater", .module = openwater },
+                .{ .name = "fixtures", .module = fixtures },
+            },
         }),
     });
     b.installArtifact(exe);

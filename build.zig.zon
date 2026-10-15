@@ -3,7 +3,12 @@
     .fingerprint = 0x1fe225e490be5ddf,
     .version = "0.0.0",
     .minimum_zig_version = "0.17.0",
-    .dependencies = .{},
+    .dependencies = .{
+        .xmlread = .{
+            .url = "git+https://codeberg.org/kudu/xmlread#8b841a94dfcb7a665d278627dd2feefe739e442a",
+            .hash = "xmlread-0.2.0-Ha9x8T_hAQBf-Rnje0_qsLCQBFzzJdB21YEB3-WPFY5-",
+        },
+    },
     .paths = .{
         "build.zig",
         "build.zig.zon",

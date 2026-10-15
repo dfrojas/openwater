@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uddf version="3.2.3">
+  <generator>
+    <name>OpenWater spike</name>
+    <version>experiment</version>
+  </generator>
+  <diver>
+    <owner id="owner">
+      <personal>
+        <firstname>Ada</firstname>
+        <lastname>Diver</lastname>
+      </personal>
+      <equipment>
+        <tank id="back">
+          <name>Back gas</name>
+          <tankvolume>0.012</tankvolume>
+        </tank>
+        <tank id="stage">
+          <name>Stage</name>
+          <tankvolume>0.007</tankvolume>
+        </tank>
+      </equipment>
+    </owner>
+    <buddy id="buddy">
+      <personal>
+        <firstname>Sam</firstname>
+        <lastname>Diver</lastname>
+      </personal>
+    </buddy>
+  </diver>
+  <divesite>
+    <site id="reef">
+      <name>Reef</name>
+      <geography>
+        <location>Example bay</location>
+        <latitude>28.5</latitude>
+        <longitude>-16.3</longitude>
+        <altitude>0.0</altitude>
+      </geography>
+    </site>
+  </divesite>
+  <gasdefinitions>
+    <mix id="air">
+      <name>Air</name>
+      <o2>0.21</o2>
+      <n2>0.79</n2>
+      <he>0.0</he>
+      <ar>0.0</ar>
+      <h2>0.0</h2>
+    </mix>
+    <mix id="ean50">
+      <name>EAN50</name>
+      <o2>0.5</o2>
+      <n2>0.5</n2>
+      <maximumpo2>160000.0</maximumpo2>
+    </mix>
+  </gasdefinitions>
+  <profiledata>
+    <repetitiongroup id="day-1">
+      <dive id="dive-1">
+        <informationbeforedive>
+          <link ref="reef"/>
+          <link ref="buddy"/>
+          <datetime>2026-10-08T10:00:00Z</datetime>
+          <divenumber>10</divenumber>
+          <surfaceintervalbeforedive>
+            <infinity/>
+          </surfaceintervalbeforedive>
+        </informationbeforedive>
+        <tankdata>
+          <link ref="back"/>
+          <link ref="air"/>
+          <tankpressurebegin>20000000.0</tankpressurebegin>
+          <tankpressureend>12000000.0</tankpressureend>
+        </tankdata>
+        <tankdata>
+          <link ref="stage"/>
+          <link ref="ean50"/>
+          <tankpressurebegin>20000000.0</tankpressurebegin>
+        </tankdata>
+        <samples>
+          <waypoint>
+            <depth>0.0</depth>
+            <divetime>0.0</divetime>
+            <switchmix ref="air"/>
+            <tankpressure tankref="back">20000000.0</tankpressure>
+            <tankpressure tankref="stage">20000000.0</tankpressure>
+            <temperature>293.15</temperature>
+            <heartrate>1.2</heartrate>
+          </waypoint>
+          <waypoint>
+            <depth>20.0</depth>
+            <divetime>120.0</divetime>
+          </waypoint>
+          <waypoint>
+            <depth>5.0</depth>
+            <divetime>600.0</divetime>
+            <switchmix ref="ean50"/>
+          </waypoint>
+          <waypoint>
+            <depth>0.0</depth>
+            <divetime>900.0</divetime>
+          </waypoint>
+        </samples>
+        <informationafterdive>
+          <greatestdepth>20.0</greatestdepth>
+          <diveduration>900.0</diveduration>
+          <lowesttemperature>290.15</lowesttemperature>
+        </informationafterdive>
+      </dive>
+      <dive id="dive-2">
+        <informationbeforedive>
+          <link ref="reef"/>
+          <datetime>2026-10-08T12:00:00+01:00</datetime>
+          <surfaceintervalbeforedive>
+            <passedtime>2700.0</passedtime>
+          </surfaceintervalbeforedive>
+        </informationbeforedive>
+        <informationafterdive>
+          <greatestdepth>10.0</greatestdepth>
+          <diveduration>720.0</diveduration>
+        </informationafterdive>
+      </dive>
+    </repetitiongroup>
+  </profiledata>
+</uddf>
