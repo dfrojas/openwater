@@ -11,4 +11,4 @@ test: ## Run the tests
 	zig build test
 
 fmt: ## Format the code
-	zig fmt build.zig build.zig.zon src experiments
+	zig fmt build.zig build.zig.zon src

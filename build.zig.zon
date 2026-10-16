@@ -8,11 +8,18 @@
             .url = "git+https://codeberg.org/kudu/xmlread#8b841a94dfcb7a665d278627dd2feefe739e442a",
             .hash = "xmlread-0.2.0-Ha9x8T_hAQBf-Rnje0_qsLCQBFzzJdB21YEB3-WPFY5-",
         },
+        .libdivecomputer = .{
+            .url = "https://github.com/libdivecomputer/libdivecomputer/releases/download/v0.9.0/libdivecomputer-0.9.0.tar.gz",
+            .hash = "N-V-__8AAIdAPQD2vH57gKwM7XCcZ70azBTp75nCZzf20Ed_",
+        },
     },
     .paths = .{
         "build.zig",
         "build.zig.zon",
+        "libdivecomputer_build.zig",
+        "vendor",
         "src",
+        "fixtures",
         "README.md",
         "LICENSE",
     },

@@ -6,7 +6,7 @@ pub fn main(init: std.process.Init) !u8 {
     const slice = try init.minimal.args.toSlice(init.arena.allocator());
     const options = args.parse(slice[1..]) catch {
         std.debug.print(
-            "usage: openwater --input <path> --output <path>\n",
+            "usage: openwater --input <path> --output <path> [--family <name>] [--model <n>]\n",
             .{},
         );
         return 1;

@@ -18,6 +18,7 @@ test "convert writes json output file" {
         .output_path = "dive.json",
         .input_format = .uddf_xml,
         .output_format = .dive_json_v1,
+        .dive_computer = .{ .family_name = "" },
     };
     try convert.run(testing.allocator, io, tmp.dir, options);
 

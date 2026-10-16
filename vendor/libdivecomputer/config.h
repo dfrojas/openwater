@@ -1,0 +1,34 @@
+/* Minimal libdivecomputer config for static file parsing (no USB/BLE). */
+#define ENABLE_LOGGING 1
+#define HAVE_CLOCK_GETTIME 1
+#define HAVE_DECL_STRERROR_R 1
+#define HAVE_DLFCN_H 1
+#define HAVE_GETOPT_H 1
+#define HAVE_GETOPT_LONG 1
+#define HAVE_GMTIME_R 1
+#define HAVE_INTTYPES_H 1
+#define HAVE_LOCALTIME_R 1
+#define HAVE_MEMORY_H 1
+#define HAVE_MKSTEMP 1
+#define HAVE_PTHREAD 1
+#define HAVE_PTHREAD_H 1
+#define HAVE_STDINT_H 1
+#define HAVE_STDLIB_H 1
+#define HAVE_STRERROR 1
+#define HAVE_STRINGS_H 1
+#define HAVE_STRING_H 1
+#define HAVE_STRTOLL 1
+#define HAVE_SYS_STAT_H 1
+#define HAVE_SYS_TIME_H 1
+#define HAVE_SYS_TYPES_H 1
+#define HAVE_UNISTD_H 1
+#define HAVE_VASPRINTF 1
+#define PACKAGE "libdivecomputer"
+#define PACKAGE_BUGREPORT "https://www.libdivecomputer.org/"
+#define PACKAGE_NAME "libdivecomputer"
+#define PACKAGE_STRING "libdivecomputer 0.9.0"
+#define PACKAGE_TARNAME "libdivecomputer"
+#define PACKAGE_URL "https://www.libdivecomputer.org/"
+#define PACKAGE_VERSION "0.9.0"
+#define STDC_HEADERS 1
+#define VERSION "0.9.0"

@@ -6,7 +6,8 @@ const testing = std.testing;
 const fixture = fixtures.logbook_v01_uddf;
 
 test "dive_json_v1 mirrors document generator and dive count" {
-    var owned = try openwater.read(testing.allocator, .uddf_xml, fixture);
+    const unused_dc = openwater.DiveComputerImportOptions{ .family_name = "" };
+    var owned = try openwater.read(testing.allocator, .uddf_xml, fixture, unused_dc);
     defer owned.deinit();
     try owned.value.checkReferences(testing.allocator);
 

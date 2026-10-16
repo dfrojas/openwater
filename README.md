@@ -28,7 +28,11 @@ openwater --input plan.uddf.xml --output dive.json
 
 The CLI calls the library. The library is the engine. The library can also be used in other external Zig packages.
 
-Input and output formats are chosen from the file extensions (`.uddf`, `.xml`, `.json`).
+Input and output formats are chosen from the file extensions (`.uddf`, `.xml`, `.json`). Vendor dive dumps (`.dlf`, `.bin`, `.raw`) require `--family` (and optionally `--model`), parsed via libdivecomputer:
+
+```sh
+openwater --input dive.dlf --output dive.uddf --family freedom
+```
 
 # Why
 
