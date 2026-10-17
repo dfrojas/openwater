@@ -22,19 +22,28 @@ stdenv.mkDerivation rec {
     ln -s ${zigPkg} zig-pkg
     ${lib.optionalString stdenv.hostPlatform.isLinux ''
       export CPATH="${linuxHeaders}/include''${CPATH:+:$CPATH}"
+      # Sandbox has no /lib64/ld-linux. Point Zig at Nix glibc or test spawn returns FileNotFound.
+      cat > "$TMPDIR/libc.txt" <<EOF
+      include_dir=${lib.getDev stdenv.cc.libc}/include
+      sys_include_dir=${lib.getDev stdenv.cc.libc}/include
+      crt_dir=${lib.getLib stdenv.cc.libc}/lib
+      msvc_lib_dir=
+      kernel_include_dir=${linuxHeaders}/include
+      gcc_dir=${stdenv.cc.cc}/lib/gcc/${stdenv.hostPlatform.config}/${stdenv.cc.cc.version}
+      EOF
     ''}
   '';
 
   checkPhase = ''
     runHook preCheck
     zig fmt --check build.zig build.zig.zon src
-    zig build test
+    zig build test ${lib.optionalString stdenv.hostPlatform.isLinux "--libc $TMPDIR/libc.txt"}
     runHook postCheck
   '';
 
   installPhase = ''
     runHook preInstall
-    zig build --prefix $out install
+    zig build --prefix $out install ${lib.optionalString stdenv.hostPlatform.isLinux "--libc $TMPDIR/libc.txt"}
     runHook postInstall
   '';
 
