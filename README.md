@@ -40,7 +40,14 @@ I like to learn by working on real projects. I'm using my passion for diving to 
 
 ## Test and run
 
-Requires Zig 0.17.0.
+Requires Zig 0.17.0. With [Nix](https://nixos.org/download/), the dev shell pins the same compiler as CI.
+
+```sh
+nix develop -c zig build test
+nix develop -c zig build run -- --input plan.uddf.xml --output dive.json
+```
+
+Without Nix:
 
 ```sh
 zig build test
