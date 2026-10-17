@@ -17,10 +17,25 @@ pub fn addStaticLibrary(
     root.addIncludePath(ldc_root.path(b, "include"));
     root.addIncludePath(ldc_root.path(b, "include/libdivecomputer"));
 
-    const flags = &.{
-        "-std=c99",
-        "-DHAVE_CONFIG_H",
-        "-Wno-unused-parameter",
+    const flags: []const []const u8 = switch (target.result.os.tag) {
+        .linux => &.{
+            "-std=c99",
+            "-DHAVE_CONFIG_H",
+            "-DHAVE_LINUX_SERIAL_H",
+            "-D_GNU_SOURCE",
+            "-Wno-unused-parameter",
+        },
+        .macos => &.{
+            "-std=c99",
+            "-DHAVE_CONFIG_H",
+            "-D_DARWIN_C_SOURCE",
+            "-Wno-unused-parameter",
+        },
+        else => &.{
+            "-std=c99",
+            "-DHAVE_CONFIG_H",
+            "-Wno-unused-parameter",
+        },
     };
 
     const sources = [_][]const u8{

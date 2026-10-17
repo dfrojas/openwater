@@ -2,6 +2,7 @@
 , lib
 , zig
 , zigPkg
+, linuxHeaders
 }:
 
 stdenv.mkDerivation rec {
@@ -11,6 +12,7 @@ stdenv.mkDerivation rec {
   src = ../.;
 
   nativeBuildInputs = [ zig ];
+  buildInputs = lib.optionals stdenv.hostPlatform.isLinux [ linuxHeaders ];
 
   dontConfigure = true;
 
@@ -18,6 +20,9 @@ stdenv.mkDerivation rec {
     export HOME=$TMPDIR
     rm -rf zig-pkg
     ln -s ${zigPkg} zig-pkg
+    ${lib.optionalString stdenv.hostPlatform.isLinux ''
+      export CPATH="${linuxHeaders}/include''${CPATH:+:$CPATH}"
+    ''}
   '';
 
   checkPhase = ''
