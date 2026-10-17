@@ -26,10 +26,11 @@ stdenv.mkDerivation rec {
       cat > "$TMPDIR/libc.txt" <<EOF
       include_dir=${lib.getDev stdenv.cc.libc}/include
       sys_include_dir=${lib.getDev stdenv.cc.libc}/include
+      cc_dir=${stdenv.cc.cc}/lib/gcc/${stdenv.hostPlatform.config}/${stdenv.cc.cc.version}
       crt_dir=${lib.getLib stdenv.cc.libc}/lib
       msvc_lib_dir=
-      kernel_include_dir=${linuxHeaders}/include
-      gcc_dir=${stdenv.cc.cc}/lib/gcc/${stdenv.hostPlatform.config}/${stdenv.cc.cc.version}
+      kernel32_lib_dir=
+      darwin_sdk_dir=
       EOF
     ''}
   '';
