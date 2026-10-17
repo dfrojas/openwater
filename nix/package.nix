@@ -1,6 +1,7 @@
 { stdenv
 , lib
 , zig
+, zigPkg
 }:
 
 stdenv.mkDerivation rec {
@@ -15,6 +16,8 @@ stdenv.mkDerivation rec {
 
   preBuild = ''
     export HOME=$TMPDIR
+    rm -rf zig-pkg
+    ln -s ${zigPkg} zig-pkg
   '';
 
   checkPhase = ''
@@ -31,9 +34,6 @@ stdenv.mkDerivation rec {
   '';
 
   doCheck = true;
-
-  # Zig fetches build.zig.zon dependencies; needs network outside the fixed-output sandbox.
-  __noSandbox = true;
 
   meta = with lib; {
     description = "Read and write dive plans in UDDF format";

@@ -50,6 +50,19 @@
         "type": "github"
       }
     },
+    "libdivecomputer-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1751315107,
+        "narHash": "sha256-wghC3uO5KEDK2yapsRdGnOdm+7W37QGlGu7qPXAy6KY=",
+        "type": "tarball",
+        "url": "https://github.com/libdivecomputer/libdivecomputer/releases/download/v0.9.0/libdivecomputer-0.9.0.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://github.com/libdivecomputer/libdivecomputer/releases/download/v0.9.0/libdivecomputer-0.9.0.tar.gz"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1771043024,
@@ -70,10 +83,12 @@
       "inputs": {
         "flake-compat": "flake-compat",
         "flake-utils": "flake-utils",
+        "libdivecomputer-src": "libdivecomputer-src",
         "nixpkgs": [
           "zig",
           "nixpkgs"
         ],
+        "xmlread-src": "xmlread-src",
         "zig": "zig"
       }
     },
@@ -106,6 +121,23 @@
         "owner": "nix-systems",
         "repo": "default",
         "type": "github"
+      }
+    },
+    "xmlread-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1787739115,
+        "narHash": "sha256-zt68lGiYcBtW5aV7Kx9HjclsboIl+cdYSmzIxvU1VeU=",
+        "ref": "refs/heads/main",
+        "rev": "8b841a94dfcb7a665d278627dd2feefe739e442a",
+        "revCount": 14,
+        "type": "git",
+        "url": "https://codeberg.org/kudu/xmlread"
+      },
+      "original": {
+        "rev": "8b841a94dfcb7a665d278627dd2feefe739e442a",
+        "type": "git",
+        "url": "https://codeberg.org/kudu/xmlread"
       }
     },
     "zig": {
