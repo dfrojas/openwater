@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
     ln -s ${zigPkg} zig-pkg
     ${lib.optionalString stdenv.hostPlatform.isLinux ''
       export CPATH="${linuxHeaders}/include''${CPATH:+:$CPATH}"
-      # Sandbox has no /lib64/ld-linux. Point Zig at Nix glibc or test spawn returns FileNotFound.
+      # The libc file supplies headers and crt objects. -Ddynamic-linker supplies the Nix interpreter. Without it, the sandbox has no /lib64/ld-linux and Zig reports FileNotFound.
       cat > "$TMPDIR/libc.txt" <<EOF
       include_dir=${lib.getDev stdenv.cc.libc}/include
       sys_include_dir=${lib.getDev stdenv.cc.libc}/include
@@ -38,13 +38,13 @@ stdenv.mkDerivation rec {
   checkPhase = ''
     runHook preCheck
     zig fmt --check build.zig build.zig.zon src
-    zig build test ${lib.optionalString stdenv.hostPlatform.isLinux "--libc $TMPDIR/libc.txt"}
+    zig build test ${lib.optionalString stdenv.hostPlatform.isLinux "--libc $TMPDIR/libc.txt -Ddynamic-linker=${stdenv.cc.bintools.dynamicLinker}"}
     runHook postCheck
   '';
 
   installPhase = ''
     runHook preInstall
-    zig build --prefix $out install ${lib.optionalString stdenv.hostPlatform.isLinux "--libc $TMPDIR/libc.txt"}
+    zig build --prefix $out install ${lib.optionalString stdenv.hostPlatform.isLinux "--libc $TMPDIR/libc.txt -Ddynamic-linker=${stdenv.cc.bintools.dynamicLinker}"}
     runHook postInstall
   '';
 
