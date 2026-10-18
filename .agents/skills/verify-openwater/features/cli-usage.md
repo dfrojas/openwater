@@ -30,4 +30,5 @@ Evidence: `.verify-openwater/evidence/<run_id>/transcript.txt`.
 
 ## Gotchas
 
-- Partial flags (only `--input` or only `--output`) also fail parse with exit `1` but may not print the usage line; this feature map entry covers the **no-args** path only.
+- Partial flags (only `--input` or only `--output`) also fail parse with exit `1` and print the same usage line; this map entry is verified via the **no-args** drive only.
+- Vendor dump input without `--family` also prints usage (see `vendor-dump-missing-family`).

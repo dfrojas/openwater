@@ -9,6 +9,7 @@ BIN="${OPENWATER_BIN:-$ROOT/zig-out/bin/openwater}"
 RUNS_DIR="$ROOT/.verify-openwater/runs"
 EVIDENCE_DIR="$ROOT/.verify-openwater/evidence"
 FIXTURE_UDDF="$ROOT/fixtures/logbook_v01.uddf"
+FIXTURE_DLF="$ROOT/fixtures/freedom_mix2_v2_00000007.dlf"
 REQUIRED_ZIG="0.17.0"
 
 usage() {
@@ -37,12 +38,16 @@ cmd_doctor() {
     echo "doctor: FAIL missing fixture $FIXTURE_UDDF" >&2
     return 1
   fi
+  if [[ ! -f "$FIXTURE_DLF" ]]; then
+    echo "doctor: FAIL missing fixture $FIXTURE_DLF" >&2
+    return 1
+  fi
   ensure_build
   if [[ ! -x "$BIN" ]]; then
     echo "doctor: FAIL binary missing at $BIN" >&2
     return 1
   fi
-  echo "doctor: OK zig=$zig_ver bin=$BIN fixture=$FIXTURE_UDDF"
+  echo "doctor: OK zig=$zig_ver bin=$BIN uddf=$FIXTURE_UDDF dlf=$FIXTURE_DLF"
 }
 
 new_run_id() {
@@ -144,9 +149,9 @@ drive_unsupported_extension() {
   run_id="$(capture_run "$(new_run_id)")"
   local run_dir="$RUNS_DIR/$run_id"
   local ev="$EVIDENCE_DIR/$run_id"
-  local input="$run_dir/notes.txt"
-  echo "not uddf" >"$input"
-  local output="$run_dir/out.json"
+  local input="$run_dir/plan.uddf"
+  local output="$run_dir/out.dlf"
+  cp "$FIXTURE_UDDF" "$input"
   local stdout="$run_dir/stdout.txt"
   local stderr="$run_dir/stderr.txt"
 
@@ -177,16 +182,130 @@ drive_unsupported_extension() {
   echo "$run_id" >"$run_dir/RUN_ID"
 }
 
+drive_vendor_dump_to_uddf() {
+  local run_id
+  run_id="$(capture_run "$(new_run_id)")"
+  local run_dir="$RUNS_DIR/$run_id"
+  local ev="$EVIDENCE_DIR/$run_id"
+  local input="$run_dir/dive.dlf"
+  local output="$run_dir/freedom.uddf"
+  cp "$FIXTURE_DLF" "$input"
+
+  local stdout="$run_dir/stdout.txt"
+  local stderr="$run_dir/stderr.txt"
+  set +e
+  "$BIN" --input "$input" --output "$output" --family freedom >"$stdout" 2>"$stderr"
+  local code=$?
+  set -e
+
+  write_transcript "$ev/transcript.txt" "$code" "$stdout" "$stderr"
+  cp "$output" "$ev/freedom.uddf" 2>/dev/null || true
+
+  if [[ "$code" -ne 0 ]]; then
+    echo "drive vendor-dump-to-uddf: FAIL exit $code (evidence $ev)" >&2
+    echo "$run_id" >"$run_dir/RUN_ID"
+    return 1
+  fi
+  if ! grep -q '<uddf version="3.2.3">' "$output"; then
+    echo "drive vendor-dump-to-uddf: FAIL missing uddf version (evidence $ev)" >&2
+    echo "$run_id" >"$run_dir/RUN_ID"
+    return 1
+  fi
+  if ! grep -q '<greatestdepth>18.98</greatestdepth>' "$output"; then
+    echo "drive vendor-dump-to-uddf: FAIL missing greatest depth (evidence $ev)" >&2
+    echo "$run_id" >"$run_dir/RUN_ID"
+    return 1
+  fi
+
+  echo "drive vendor-dump-to-uddf: OK run_id=$run_id evidence=$ev"
+  echo "$run_id" >"$run_dir/RUN_ID"
+}
+
+drive_vendor_dump_to_json() {
+  local run_id
+  run_id="$(capture_run "$(new_run_id)")"
+  local run_dir="$RUNS_DIR/$run_id"
+  local ev="$EVIDENCE_DIR/$run_id"
+  local input="$run_dir/dive.dlf"
+  local output="$run_dir/freedom.json"
+  cp "$FIXTURE_DLF" "$input"
+
+  local stdout="$run_dir/stdout.txt"
+  local stderr="$run_dir/stderr.txt"
+  set +e
+  "$BIN" --input "$input" --output "$output" --family freedom >"$stdout" 2>"$stderr"
+  local code=$?
+  set -e
+
+  write_transcript "$ev/transcript.txt" "$code" "$stdout" "$stderr"
+  cp "$output" "$ev/freedom.json" 2>/dev/null || true
+
+  if [[ "$code" -ne 0 ]]; then
+    echo "drive vendor-dump-to-json: FAIL exit $code (evidence $ev)" >&2
+    echo "$run_id" >"$run_dir/RUN_ID"
+    return 1
+  fi
+  if ! grep -q '"schema": "dive_json_v1"' "$output"; then
+    echo "drive vendor-dump-to-json: FAIL missing schema marker (evidence $ev)" >&2
+    echo "$run_id" >"$run_dir/RUN_ID"
+    return 1
+  fi
+
+  echo "drive vendor-dump-to-json: OK run_id=$run_id evidence=$ev"
+  echo "$run_id" >"$run_dir/RUN_ID"
+}
+
+drive_vendor_dump_missing_family() {
+  local run_id
+  run_id="$(capture_run "$(new_run_id)")"
+  local run_dir="$RUNS_DIR/$run_id"
+  local ev="$EVIDENCE_DIR/$run_id"
+  local input="$run_dir/dive.dlf"
+  local output="$run_dir/out.uddf"
+  cp "$FIXTURE_DLF" "$input"
+
+  local stdout="$run_dir/stdout.txt"
+  local stderr="$run_dir/stderr.txt"
+  set +e
+  "$BIN" --input "$input" --output "$output" >"$stdout" 2>"$stderr"
+  local code=$?
+  set -e
+
+  write_transcript "$ev/transcript.txt" "$code" "$stdout" "$stderr"
+
+  if [[ "$code" -ne 1 ]]; then
+    echo "drive vendor-dump-missing-family: FAIL expected exit 1, got $code (evidence $ev)" >&2
+    echo "$run_id" >"$run_dir/RUN_ID"
+    return 1
+  fi
+  if ! grep -q 'usage: openwater --input' "$stderr"; then
+    echo "drive vendor-dump-missing-family: FAIL missing usage on stderr (evidence $ev)" >&2
+    echo "$run_id" >"$run_dir/RUN_ID"
+    return 1
+  fi
+  if [[ -f "$output" ]]; then
+    echo "drive vendor-dump-missing-family: FAIL output file was created (evidence $ev)" >&2
+    echo "$run_id" >"$run_dir/RUN_ID"
+    return 1
+  fi
+
+  echo "drive vendor-dump-missing-family: OK run_id=$run_id evidence=$ev"
+  echo "$run_id" >"$run_dir/RUN_ID"
+}
+
 cmd_drive() {
   local feature="${1:-}"
   ensure_build
   case "$feature" in
     uddf-to-json) drive_uddf_to_json ;;
+    vendor-dump-to-uddf) drive_vendor_dump_to_uddf ;;
+    vendor-dump-to-json) drive_vendor_dump_to_json ;;
+    vendor-dump-missing-family) drive_vendor_dump_missing_family ;;
     cli-usage) drive_cli_usage ;;
     unsupported-extension) drive_unsupported_extension ;;
     *)
       echo "drive: unknown feature-id '$feature'" >&2
-      echo "known: uddf-to-json cli-usage unsupported-extension" >&2
+      echo "known: uddf-to-json vendor-dump-to-uddf vendor-dump-to-json vendor-dump-missing-family cli-usage unsupported-extension" >&2
       return 1
       ;;
   esac
