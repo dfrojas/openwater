@@ -1,0 +1,10 @@
+{
+"mcpServers": {
+    "server-name": {
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "API_KEY": "abc"
+      }
+    }
+  }
+}
