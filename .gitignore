@@ -1,5 +1,5 @@
 .zig-cache
 zig-out/
-.verify-openwater
+.verify-*
 .cursor/settings.json
 zig-pkg

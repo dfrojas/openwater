@@ -1,0 +1,59 @@
+minimumLimaVersion: 2.0.0
+
+base:
+- template:_images/ubuntu-24.04
+
+vmType: vz
+mountType: virtiofs
+cpus: 4
+memory: 8GiB
+
+containerd:
+  system: false
+  user: false
+
+mounts:
+- location: "~"
+  writable: true
+
+provision:
+- mode: system
+  script: |
+    #!/bin/bash
+    set -euxo pipefail
+    export HOME="${HOME:-/root}"
+    if [ ! -x /nix/var/nix/profiles/default/bin/nix ]; then
+      curl -fsSL https://nixos.org/nix/install | sh -s -- --daemon --yes
+    fi
+    install -d /etc/nix
+    touch /etc/nix/nix.conf
+    set_nix() {
+      local key="$1"
+      local value="$2"
+      if grep -Eq "^${key}[[:space:]]*=" /etc/nix/nix.conf; then
+        sed -i -E "s|^${key}[[:space:]]*=.*|${key} = ${value}|" /etc/nix/nix.conf
+      else
+        printf '%s = %s\n' "$key" "$value" >> /etc/nix/nix.conf
+      fi
+    }
+    set_nix experimental-features "nix-command flakes"
+    set_nix sandbox true
+    set_nix nix-path "nixpkgs=channel:nixos-unstable"
+    systemctl restart nix-daemon
+
+probes:
+- script: |
+    #!/bin/bash
+    set -euxo pipefail
+    test -x /nix/var/nix/profiles/default/bin/nix
+    grep -Eq '^sandbox[[:space:]]*=[[:space:]]*true' /etc/nix/nix.conf
+    nix config show sandbox | grep -Eq '^(sandbox = )?true$'
+  hint: See /var/log/cloud-init-output.log in the guest
+
+message: |
+  Ubuntu 24.04 guest with Nix sandbox enabled (matches GitHub ubuntu-latest + install-nix-action).
+  Home is mounted at the same path as on the host.
+  From repo root on the host:
+    limactl start --name=openwater .agents/skills/verify-ci/scripts/openwater.yaml
+    .agents/skills/verify-ci/scripts/verify.sh doctor
+    .agents/skills/verify-ci/scripts/verify.sh drive nix-flake-check
