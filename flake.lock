@@ -3,22 +3,6 @@
     "flake-compat": {
       "flake": false,
       "locked": {
-        "lastModified": 1767039857,
-        "narHash": "sha256-vNpUSpF5Nuw8xvDLj2KCwwksIbjua2LZCqhV1LNRDns=",
-        "owner": "edolstra",
-        "repo": "flake-compat",
-        "rev": "5edf11c44bc78a0d334f6334cdaf7d60d732daab",
-        "type": "github"
-      },
-      "original": {
-        "owner": "edolstra",
-        "repo": "flake-compat",
-        "type": "github"
-      }
-    },
-    "flake-compat_2": {
-      "flake": false,
-      "locked": {
         "lastModified": 1696426674,
         "narHash": "sha256-kvjfFW7WAETZlt09AgDn1MrtKzP7t90Vf7vypd3OL1U=",
         "owner": "edolstra",
@@ -50,19 +34,6 @@
         "type": "github"
       }
     },
-    "libdivecomputer-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1751315107,
-        "narHash": "sha256-wghC3uO5KEDK2yapsRdGnOdm+7W37QGlGu7qPXAy6KY=",
-        "type": "tarball",
-        "url": "https://github.com/libdivecomputer/libdivecomputer/releases/download/v0.9.0/libdivecomputer-0.9.0.tar.gz"
-      },
-      "original": {
-        "type": "tarball",
-        "url": "https://github.com/libdivecomputer/libdivecomputer/releases/download/v0.9.0/libdivecomputer-0.9.0.tar.gz"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1771043024,
@@ -81,14 +52,11 @@
     },
     "root": {
       "inputs": {
-        "flake-compat": "flake-compat",
         "flake-utils": "flake-utils",
-        "libdivecomputer-src": "libdivecomputer-src",
         "nixpkgs": [
           "zig",
           "nixpkgs"
         ],
-        "xmlread-src": "xmlread-src",
         "zig": "zig"
       }
     },
@@ -123,26 +91,9 @@
         "type": "github"
       }
     },
-    "xmlread-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1787739115,
-        "narHash": "sha256-zt68lGiYcBtW5aV7Kx9HjclsboIl+cdYSmzIxvU1VeU=",
-        "ref": "refs/heads/main",
-        "rev": "8b841a94dfcb7a665d278627dd2feefe739e442a",
-        "revCount": 14,
-        "type": "git",
-        "url": "https://codeberg.org/kudu/xmlread"
-      },
-      "original": {
-        "rev": "8b841a94dfcb7a665d278627dd2feefe739e442a",
-        "type": "git",
-        "url": "https://codeberg.org/kudu/xmlread"
-      }
-    },
     "zig": {
       "inputs": {
-        "flake-compat": "flake-compat_2",
+        "flake-compat": "flake-compat",
         "nixpkgs": "nixpkgs",
         "systems": "systems_2"
       },

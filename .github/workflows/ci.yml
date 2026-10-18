@@ -1,5 +1,5 @@
 on: [push, pull_request]
-name: Test
+name: CI
 
 permissions:
   contents: read
@@ -11,21 +11,19 @@ jobs:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - uses: cachix/install-nix-action@v27
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
+      - uses: ./.github/actions/nix-devshell
 
       - run: nix flake check --accept-flake-config
 
+      - name: fmt
+        run: nix develop --accept-flake-config -c zig fmt --check build.zig build.zig.zon src
+
       - name: test
         run: nix develop --accept-flake-config -c zig build test
-
-      - run: nix build --accept-flake-config
 
   build:
     strategy:
@@ -40,16 +38,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: test
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - uses: cachix/install-nix-action@v27
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-
-      - run: nix flake check --accept-flake-config
+      - uses: ./.github/actions/nix-devshell
 
       - name: build
         run: nix develop --accept-flake-config -c zig build -Dtarget=${{ matrix.target }}

@@ -40,9 +40,11 @@ I like to learn by working on real projects. I'm using my passion for diving to 
 
 ## Test and run
 
-Requires Zig 0.17.0. With [Nix](https://nixos.org/download/), the dev shell pins the same compiler as CI.
+Requires Zig 0.17.0. With [Nix](https://nixos.org/download/), the flake dev shell pins the same compiler as CI. Dependencies fetch from `build.zig.zon` when you build inside the shell.
 
 ```sh
+nix flake check
+nix develop -c zig fmt --check build.zig build.zig.zon src
 nix develop -c zig build test
 nix develop -c zig build run -- --input plan.uddf.xml --output dive.json
 ```
