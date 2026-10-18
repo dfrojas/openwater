@@ -1,11 +1,11 @@
 ---
 name: verify-openwater
-description: Drive the openwater CLI to prove UDDF-to-JSON conversion and error handling. Use when you need end-to-end verification beyond zig build test, or before claiming a user-visible CLI change works.
+description: Drive the openwater CLI to prove UDDF and vendor-dump conversion plus error handling. Use when you need end-to-end verification beyond zig build test, or before claiming a user-visible CLI change works.
 ---
 
 # Verify OpenWater
 
-OpenWater is a **CLI + Zig library** for UDDF dive plans. Users interact with the **CLI** (`openwater --input … --output …`). The library is the engine; prove CLI behavior with this skill.
+OpenWater is a **CLI + Zig library** for UDDF dive plans and vendor dive dumps (libdivecomputer). Users interact with the **CLI** (`openwater --input … --output …` plus `--family` for `.dlf`/`.bin`/`.raw`). The library is the engine; prove CLI behavior with this skill.
 
 There is **no server**, port, or auth. Each drive is a **short-lived subprocess** with file I/O. Multiple drives are safe if each uses its own run scratch dir (default).
 
@@ -49,11 +49,14 @@ Feature IDs and journeys live in [`features/README.md`](features/README.md). Pre
 | Handle | Meaning |
 |--------|---------|
 | `--input` / `--output` | Required flags |
+| `--family` / `--model` | Required `--family` for vendor dumps; optional model override |
 | `fixtures/logbook_v01.uddf` | Canonical UDDF sample (README’s `plan.uddf.xml` is not in the tree) |
-| `.uddf`, `.xml` | Input format → UDDF XML |
-| `.json` | Output format → `dive_json_v1` |
-| `usage: openwater --input` | Printed on stderr when args are missing |
-| `error: UnsupportedFormat` | Unknown file extension |
+| `fixtures/freedom_mix2_v2_00000007.dlf` | Divesoft Freedom dump for LDC import drives |
+| `.uddf`, `.xml` | Input/output → UDDF XML |
+| `.json` | Output → `dive_json_v1` |
+| `.dlf`, `.bin`, `.raw` | Input → dive-computer dump (needs `--family`) |
+| `usage: openwater --input` | Parse failure (missing flags, unknown ext, dump without `--family`, …) |
+| `error: UnsupportedFormat` | Known extension but conversion not supported (e.g. JSON input, dump output) |
 
 Do **not** rely on internal test modules or `@import("fixtures")` for proof; copy the on-disk fixture into an isolated run dir like the script does.
 
