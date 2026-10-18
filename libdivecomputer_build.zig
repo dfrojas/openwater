@@ -10,6 +10,7 @@ pub fn addStaticLibrary(
         .root_source_file = b.path("vendor/libdivecomputer/empty.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
     });
 
     const config_include = b.path("vendor/libdivecomputer");
@@ -152,7 +153,6 @@ pub fn addStaticLibrary(
         "ble.c",
         "bluetooth.c",
         "custom.c",
-        "serial_posix.c",
     };
 
     root.addCSourceFiles(.{
@@ -160,13 +160,23 @@ pub fn addStaticLibrary(
         .files = &sources,
         .flags = flags,
     });
+    root.addCSourceFiles(.{
+        .root = ldc_root.path(b, "src"),
+        .files = if (target.result.os.tag == .windows)
+            &.{"serial_win32.c"}
+        else
+            &.{"serial_posix.c"},
+        .flags = flags,
+    });
     const lib = b.addLibrary(.{
         .name = "divecomputer",
         .root_module = root,
         .linkage = .static,
     });
-    lib.root_module.linkSystemLibrary("m", .{});
-    lib.root_module.linkSystemLibrary("pthread", .{});
+    if (target.result.os.tag != .windows) {
+        lib.root_module.linkSystemLibrary("m", .{});
+        lib.root_module.linkSystemLibrary("pthread", .{});
+    }
 
     return lib;
 }

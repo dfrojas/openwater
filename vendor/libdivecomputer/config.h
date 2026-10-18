@@ -5,13 +5,15 @@
 #define HAVE_DLFCN_H 1
 #define HAVE_GETOPT_H 1
 #define HAVE_GETOPT_LONG 1
+#ifndef _WIN32
 #define HAVE_GMTIME_R 1
-#define HAVE_INTTYPES_H 1
 #define HAVE_LOCALTIME_R 1
-#define HAVE_MEMORY_H 1
-#define HAVE_MKSTEMP 1
 #define HAVE_PTHREAD 1
 #define HAVE_PTHREAD_H 1
+#endif
+#define HAVE_INTTYPES_H 1
+#define HAVE_MEMORY_H 1
+#define HAVE_MKSTEMP 1
 #define HAVE_STDINT_H 1
 #define HAVE_STDLIB_H 1
 #define HAVE_STRERROR 1
